@@ -1,8 +1,7 @@
 # TODO - Replace with an openjdk/alpine base image if possible
 FROM adoptopenjdk/openjdk11
 VOLUME /tmp
-ARG JAR_FILE
-COPY ${JAR_FILE} app.jar
+COPY maven/${app.artifactId}-${project.version}.jar app.jar
 # Turns on JMX to expose metrics
 # TODO - Need to automatically set java.rmi.server.hostname
 ENTRYPOINT ["java",\

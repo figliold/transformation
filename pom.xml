@@ -68,7 +68,7 @@
         <!-- Plugin dependency properties -->
         <compiler-plugin.version>3.8.0</compiler-plugin.version>
         <dependency-plugin.version>3.0.2</dependency-plugin.version>
-        <dockerfile-maven-plugin.version>1.4.10</dockerfile-maven-plugin.version>
+        <fabric8.docker.plugin.version>0.30.0</fabric8.docker.plugin.version>
         <gitflow-plugin.version>3.4</gitflow-plugin.version>
         <javadoc-plugin.version>3.1.0</javadoc-plugin.version>
         <source-plugin.version>3.0.1</source-plugin.version>
@@ -208,22 +208,21 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>com.spotify</groupId>
-                    <artifactId>dockerfile-maven-plugin</artifactId>
-                    <version>${dockerfile-maven-plugin.version}</version>
-                    <!-- Needed to prevent exceptions during image creation -->
-                    <dependencies>
-                        <dependency>
-                            <groupId>javax.activation</groupId>
-                            <artifactId>activation</artifactId>
-                            <version>1.1.1</version>
-                        </dependency>
-                    </dependencies>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${fabric8.docker.plugin.version}</version>
                     <executions>
                         <execution>
-                            <id>default</id>
+                            <id>build-image</id>
+                            <phase>install</phase>
                             <goals>
                                 <goal>build</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>push-image</id>
+                            <phase>deploy</phase>
+                            <goals>
                                 <goal>push</goal>
                             </goals>
                         </execution>
@@ -255,7 +254,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!--plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
                 <version>1.23.0</version>
@@ -279,7 +278,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
         </plugins>
     </build>
 
