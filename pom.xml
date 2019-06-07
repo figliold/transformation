@@ -49,10 +49,9 @@
         <snapshots.repository.url />
         <releases.repository.url />
         <reports.repository.url/>
-        <maven-checkstyle-plugin.version>3.0.0</maven-checkstyle-plugin.version>
 
         <!-- Build properties -->
-        <java.version>8</java.version>
+        <java.version>11</java.version>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -64,14 +63,21 @@
         <transformation-api.version>0.0.1-SNAPSHOT</transformation-api.version>
         <spring-amqp.version>2.1.5.RELEASE</spring-amqp.version>
         <slf4j.version>1.7.25</slf4j.version>
+        <junit.jupiter.version>5.5.0-M1</junit.jupiter.version>
+        <junit.platform.version>1.5.0-M1</junit.platform.version>
 
         <!-- Plugin dependency properties -->
         <compiler-plugin.version>3.8.0</compiler-plugin.version>
         <dependency-plugin.version>3.0.2</dependency-plugin.version>
-        <dockerfile-maven-plugin.version>1.4.10</dockerfile-maven-plugin.version>
+        <directory.maven.plugin.version>0.3.1</directory.maven.plugin.version>
+        <fabric8.docker.plugin.version>0.30.0</fabric8.docker.plugin.version>
         <gitflow-plugin.version>3.4</gitflow-plugin.version>
         <javadoc-plugin.version>3.1.0</javadoc-plugin.version>
         <source-plugin.version>3.0.1</source-plugin.version>
+        <jacoco.maven.plugin.version>0.8.4</jacoco.maven.plugin.version>
+        <dependency.check.maven.plugin.version>5.0.0-M3</dependency.check.maven.plugin.version>
+        <sonar.maven.plugin.version>3.6.0.1398</sonar.maven.plugin.version>
+        <spotless.maven.plugin.version>1.23.0</spotless.maven.plugin.version>
 
         <!-- Gitflow Incremental Builder Properties -->
         <gib.referenceBranch>refs/remotes/origin/master</gib.referenceBranch>
@@ -158,6 +164,17 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.jupiter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-runner</artifactId>
+                <version>${junit.platform.version}</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -208,22 +225,21 @@
                     </executions>
                 </plugin>
                 <plugin>
-                    <groupId>com.spotify</groupId>
-                    <artifactId>dockerfile-maven-plugin</artifactId>
-                    <version>${dockerfile-maven-plugin.version}</version>
-                    <!-- Needed to prevent exceptions during image creation -->
-                    <dependencies>
-                        <dependency>
-                            <groupId>javax.activation</groupId>
-                            <artifactId>activation</artifactId>
-                            <version>1.1.1</version>
-                        </dependency>
-                    </dependencies>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>${fabric8.docker.plugin.version}</version>
                     <executions>
                         <execution>
-                            <id>default</id>
+                            <id>build-image</id>
+                            <phase>install</phase>
                             <goals>
                                 <goal>build</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>push-image</id>
+                            <phase>deploy</phase>
+                            <goals>
                                 <goal>push</goal>
                             </goals>
                         </execution>
@@ -232,7 +248,38 @@
                 <plugin>
                     <groupId>org.owasp</groupId>
                     <artifactId>dependency-check-maven</artifactId>
-                    <version>1.4.5</version>
+                    <version>${dependency.check.maven.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>${jacoco.maven.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>default-prepare-agent</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>default-report</id>
+                            <phase>prepare-package</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>default-check</id>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonarsource.scanner.maven</groupId>
+                    <artifactId>sonar-maven-plugin</artifactId>
+                    <version>${sonar.maven.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -242,6 +289,7 @@
             <plugin>
                 <groupId>org.commonjava.maven.plugins</groupId>
                 <artifactId>directory-maven-plugin</artifactId>
+                <version>${directory.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>directories</id>
@@ -258,7 +306,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>1.23.0</version>
+                <version>${spotless.maven.plugin.version}</version>
                 <configuration>
                     <java>
                         <licenseHeader>
@@ -280,6 +328,10 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 
@@ -299,13 +351,6 @@
             </build>
             <reporting>
                 <plugins>
-                    <plugin>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <version>${maven-checkstyle-plugin.version}</version>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
                     <plugin>
                         <groupId>org.owasp</groupId>
                         <artifactId>dependency-check-maven</artifactId>

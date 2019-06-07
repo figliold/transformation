@@ -26,6 +26,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
+/**
+ * Main class for the Transformation implementation application. This class also is the
+ * configuration class for the application.
+ */
 @SpringBootApplication
 public class Application {
 

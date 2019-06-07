@@ -25,6 +25,10 @@ import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+/**
+ * {@code TransformationServiceImpl} handles the business logic for forwarding the transform request
+ * to the request queue for further processing.
+ */
 @Service
 public class TransformationServiceImpl implements TransformationService {
 
@@ -39,6 +43,13 @@ public class TransformationServiceImpl implements TransformationService {
 
   private final RabbitTemplate rabbitTemplate;
 
+  /**
+   * Constructor which sets up communication with RabbitMQ
+   *
+   * @param rabbitTemplate helper class that handles RabbitMQ messaging
+   * @param exchange the message routing agent
+   * @param routingKey destination queue name
+   */
   public TransformationServiceImpl(
       RabbitTemplate rabbitTemplate, String exchange, String routingKey) {
     Preconditions.checkNotNull(rabbitTemplate, "Rabbit Template cannot be null.");
@@ -49,6 +60,12 @@ public class TransformationServiceImpl implements TransformationService {
     this.routingKey = routingKey;
   }
 
+  /**
+   * Forwards the transform request to the request queue.
+   *
+   * @param transformRequest request to transform an input
+   * @return response stating that a request has been accepted for processing
+   */
   @Override
   public TransformResponse transform(TransformRequest transformRequest) {
     try {
@@ -59,15 +76,18 @@ public class TransformationServiceImpl implements TransformationService {
     return createTransformResponse(transformRequest);
   }
 
+  /**
+   * @param transformRequest equest to transform an input
+   * @param correlationData transform request ID used for correlation
+   */
   private void forwardTransformRequest(
       TransformRequest transformRequest, CorrelationData correlationData) {
     rabbitTemplate.convertAndSend(exchange, routingKey, transformRequest, correlationData);
   }
 
   private void failRequest(TransformRequest transformRequest, Exception e) {
-    // Should we store failed requests for later processing, or should return an error response back
-    // to the
-    // caller stating that the request failed processing?
+    // TODO: Should we store failed requests for later processing, or should return an error
+    // response back to the caller stating that the request failed processing?
     LOGGER.error(
         String.format("Transformation request with ID %s failed.", transformRequest.getId()), e);
   }

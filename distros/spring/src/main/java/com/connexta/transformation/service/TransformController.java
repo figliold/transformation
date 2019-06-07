@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+/** Handles application/json POST transform requests to the /transform context. */
 @RestController
 @CrossOrigin(origins = "*")
 public class TransformController implements TransformApi {

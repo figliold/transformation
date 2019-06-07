@@ -1,10 +1,7 @@
-# TODO - Replace with an openjdk/alpine base image if possible
-FROM adoptopenjdk/openjdk11
-VOLUME /tmp
-ARG JAR_FILE
-COPY ${JAR_FILE} app.jar
+FROM openjdk:11.0.3-slim-stretch
+COPY maven/${app.artifactId}-${project.version}.jar app.jar
 # Turns on JMX to expose metrics
-# TODO - Need to automatically set java.rmi.server.hostname
+# TODO - Need to automatically set java.rmi.server.hostname (See LORE-112 and LORE-144)
 ENTRYPOINT ["java",\
     "-Dserver.port=9090",\
     "-Dspring.profiles.active=int",\

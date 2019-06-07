@@ -121,9 +121,7 @@
             <version>${springfox.version}</version>
         </dependency>
 
-        <!-- Test Dependencies
-             JUnit, Spring Test, Spring Boot Test, Mockito, AssertJ, Hamcrest, JSONassert and
-             JsonPath -->
+        <!-- Test Dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
