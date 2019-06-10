@@ -30,7 +30,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Handles application/json POST transform requests to the /transform context. */
+/**
+ * Implementation of the Transformation RESTful service. This is the main entry point for all HTTP
+ * requests.
+ */
 @RestController
 @CrossOrigin(origins = "*")
 public class TransformController implements TransformApi {
@@ -46,6 +49,11 @@ public class TransformController implements TransformApi {
     this.transformationService = transformationService;
   }
 
+  /**
+   * Handles application/json POST transform requests to the /transform context. This method
+   * handles: - Validating the message - Calling the transformation sevice to forward the request to
+   * the rquest queue - Returning an appropriate response to the caller
+   */
   @RequestMapping(
       value = "/transform",
       produces = {MediaType.APPLICATION_JSON_VALUE},

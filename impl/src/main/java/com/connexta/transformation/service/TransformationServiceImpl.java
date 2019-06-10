@@ -77,7 +77,7 @@ public class TransformationServiceImpl implements TransformationService {
   }
 
   /**
-   * @param transformRequest equest to transform an input
+   * @param transformRequest request to transform an input
    * @param correlationData transform request ID used for correlation
    */
   private void forwardTransformRequest(
